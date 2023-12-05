@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
@@ -29,31 +30,29 @@ class HomeController extends Controller
             'total' => $total,
         ];
 
-//        dd($data['transactions']);
-
         return view('home', compact('data'));
     }
 
-    private function getTransactions($tahun)
+    private function getTransactions($tahun): Collection
     {
         $response = $this->client->get("https://tes-web.landa.id/intermediate/transaksi?tahun=$tahun");
         return collect(json_decode($response->getBody()->getContents()));
     }
 
-    private function getMenu()
+    private function getMenu(): Collection
     {
         $response = $this->client->get('https://tes-web.landa.id/intermediate/menu');
         return collect(json_decode($response->getBody()->getContents()));
     }
 
-    private function filterMenuByCategory($menu, $category)
+    private function filterMenuByCategory($menu, $category): Collection
     {
         return $menu->filter(function ($item) use ($category) {
             return $item->kategori == $category;
         });
     }
 
-    private function groupTransactionsByMonth($transactions)
+    private function groupTransactionsByMonth($transactions): Collection
     {
         return $transactions->groupBy(function ($item) {
             return \Carbon\Carbon::parse($item->tanggal)->format('m');
