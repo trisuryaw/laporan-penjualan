@@ -94,21 +94,20 @@
                         @foreach($data['menu'][$category] as $menu)
                             <tr>
                                 <td>{{ $menu->menu }}</td>
-                                @for($i = 1; $i <= 12; $i++)
+                                @foreach($data['transactions'] as $transactions)
                                     @php
-                                        $transactions = $data['transactions']->get(str_pad($i, 2, '0', STR_PAD_LEFT), []);
                                         if($transactions !== []){
                                             $cellTotal = $transactions->where('menu', $menu->menu)->sum('total');
                                             $rowTotal += $cellTotal;
                                         }else
-                                            $cellTotal = ''
+                                            $cellTotal = 0
 
                                     @endphp
 
-                                    <td style="text-align: right;">{{ $cellTotal !== '' && $cellTotal !== 0 ? number_format($cellTotal, 0, '', ',') : '' }}</td>
-                                @endfor
+                                    <td style="text-align: right;">{{ $cellTotal !== 0 ? rupiahFormat($cellTotal) : '' }}</td>
+                                @endforeach
 
-                                <td><b>{{ number_format($rowTotal, 0, '', ',') }}</b></td>
+                                <td style="text-align: right;"><b>{{ rupiahFormat($rowTotal) }}</b></td>
                                 @php
                                     $amount += $rowTotal;
                                     $rowTotal = 0;
@@ -120,29 +119,30 @@
 
                     <tr class="table-dark">
                         <td colspan=""><b>Total</b></td>
-                        @for($i=1; $i<=12; $i++)
-                            @if($data['transactions']->get(str_pad($i, 2, '0', STR_PAD_LEFT), []))
+                        @foreach($data['transactions'] as $transactions)
+                            @if($transactions)
                                 <td style="text-align: right;">
-                                    <b>{{ number_format($data['transactions']->get(str_pad($i, 2, '0', STR_PAD_LEFT), [])->sum('total'), 0, '', ',') }}</b>
+                                    <b>{{ rupiahFormat($transactions->sum('total')) }}</b>
                                 </td>
                             @else
                                 <td style="text-align: right;">
                                 </td>
                             @endif
-                        @endfor
-                        <td><b>{{ number_format($amount, 0, '', ',') }}</b></td>
+                        @endforeach
+                        <td style="text-align: right;"><b>{{ rupiahFormat($amount) }}</b></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-{{--                <?php if(isset($menu)){?>--}}
 
-{{--                <div class="row m-3">--}}
-{{--                    <div class="col-6"><h4>Isi Json Menu</h4><pre style="height: 400px; background:#eaeaea;"><?php var_dump($menu) ?></pre></div>--}}
-{{--                    <div class="col-6"><h4>Isi Json Transaksi</h4><pre style="height: 400px; background:#eaeaea;"><?php var_dump($transaksi) ?></pre></div>--}}
-{{--                </div>--}}
-{{--                <?php }?>--}}
+        {{--                <?php if(isset($menu)){?>--}}
+
+        {{--                <div class="row m-3">--}}
+        {{--                    <div class="col-6"><h4>Isi Json Menu</h4><pre style="height: 400px; background:#eaeaea;"><?php var_dump($menu) ?></pre></div>--}}
+        {{--                    <div class="col-6"><h4>Isi Json Transaksi</h4><pre style="height: 400px; background:#eaeaea;"><?php var_dump($transaksi) ?></pre></div>--}}
+        {{--                </div>--}}
+        {{--                <?php }?>--}}
 
     </div>
 </div>

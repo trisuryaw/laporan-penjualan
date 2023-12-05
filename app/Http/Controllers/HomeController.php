@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 class HomeController extends Controller
 {
     private Client $client;
+
     public function __construct()
     {
         $this->client = new Client();
@@ -54,8 +55,13 @@ class HomeController extends Controller
 
     private function groupTransactionsByMonth($transactions): Collection
     {
-        return $transactions->groupBy(function ($item) {
-            return \Carbon\Carbon::parse($item->tanggal)->format('m');
-        });
+        $return = collect([]);
+        for ($i = 1; $i <= 12; $i++) {
+            $return->push($transactions->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->tanggal)->format('m');
+            })->get(str_pad($i, 2, '0', STR_PAD_LEFT), []));
+        }
+
+        return $return;
     }
 }
